@@ -30,7 +30,7 @@ fetch = ["KernelCache", "DeviceTree", "StaticTrustCache", "Cryptex1,SystemTrustC
 [userdata]
 partition = "userdata"
 first_lba = 0x41F200
-last_lba = 0x3D14BFA
+last_lba = 0x3D1FBFA
 lba_bytes = 4096
 windows = [
   { name = "OS", component = "OS" },
