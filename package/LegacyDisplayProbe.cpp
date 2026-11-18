@@ -504,18 +504,21 @@ extern void native_hid_input_probe(void);
 extern "C" void myron_touch_probe(void);
 extern "C" void myron_gpu_probe(void);
 extern "C" void myron_cpufreq_start(void);
+extern "C" void sheng_wifi_probe(void);
 // myron: of sheng's late probes the key store (KeyStoreProbe.cpp, sheng-aks=1, offline-key-events=1: an owned AppleKeyStore
 // that reports no passcode and nothing locked) and the HID input source (HidInputProbe.cpp, offline-hid-input=1,
 // offline-hid-home=1; the volume-up key as Home with myron-volup-home=1) are hardware independent. Touch is myron's own
 // FT3683 driver (MyronTouch.cpp, myron-touch=<stage>), which feeds the HID source's digitizer (sheng-touch-hid=1). The
 // Adreno 840 power and clock observation is myron's own too (MyronGpuPower.cpp, myron-gpu=<stage>, default off), and so is
 // the CPU frequency governor and thermal controller for this SoC (MyronCpuPerf.c, myron-cpufreq=<1|2>, default off).
+// Wi-Fi is sheng_wifi_probe (drivers/SongyuanWifi). It returns unless sheng-wifi>=1; sheng-wifi>=5 takes the Ath12k path.
 void native_legacy_display_late_probe(void) {
     native_keystore_probe();
     native_hid_input_probe();
     myron_touch_probe();
     myron_cpufreq_start();
     myron_gpu_probe();
+    sheng_wifi_probe();
     IOService *display=pendingLegacyDisplay;if(!display)return;pendingLegacyDisplay=nullptr;
     native_legacy_surface_status=OSKextLoadKextWithIdentifier("com.apple.iokit.IOSurface");
     OSDictionary *matching=IOService::nameMatching("IOCoreSurfaceRoot");

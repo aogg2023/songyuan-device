@@ -26,8 +26,8 @@ component = args.component
 recipe = ROOT / 'build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/iokit/DEVELOPMENT/IOPlatformExpert.cpo.json'
 record = json.loads(recipe.read_text().strip().rstrip(','))
 source = ROOT / 'drivers' / ('NativeMobileDisplay' if component in ('NativeLegacyDisplay','NativeGOPPresenter') else 'NativeMetal' if component in ('NativeOfflineGPU','NativeOfflineAccelerator','NativeIOGPUProviderProbe') else component) / {'NativeAdreno':'NativeAdrenoService.cpp'}.get(component, component + '.cpp')
-out = ROOT / 'build' / {'ArmVirtPlatform': 'armvirt-platform', 'ArmDTPlatform': 'armdt-platform', 'ArmCpu': 'armcpu', 'NativeAES': 'native-aes',
-                        'NativeVirtioBlock': 'native-virtio-block', 'NativeRamBlock': 'native-ram-block',
+out = ROOT / 'build' / {'ArmVirtPlatform': 'armvirt-platform', 'ArmDTPlatform': 'armdt-platform', 'ArmCpu': 'armcpu', 'NativeAES': 'software-aes',
+                        'NativeVirtioBlock': 'native-virtio-block', 'NativeRamBlock': 'ram-block',
                         'NativeMobileDisplay': 'native-mobile-display', 'NativeVirtioConsole': 'native-virtio-console',
                         'NativeLegacyDisplay': 'native-legacy-display', 'NativeGOPPresenter': 'native-gop-presenter', 'NativeOfflineGPU':'native-offline-gpu','NativeOfflineAccelerator':'native-offline-accelerator','NativeIOGPUProviderProbe':'native-original-provider', 'NativeUfs':'native-ufs', 'NativeHidInput':'native-hid-input', 'NativeKeyStoreEvents':'native-keystore-events', 'NativeAdreno':'native-adreno'}[component]
 if args.verified_root:
@@ -105,4 +105,15 @@ if deployment != (2, 0x110000):
 archive = out / ('lib' + component + '.a')
 archive.unlink(missing_ok=True)
 subprocess.run(['xcrun', 'ar', 'rcs', archive, destination], check=True)
+if component == 'NativeUfs':
+    # build-xnu-4k-baseline.sh force-loads build/sheng-ufs/libShengUfs.a. Same bytes as libNativeUfs.a.
+    linked = ROOT / 'build/sheng-ufs'
+    linked.mkdir(parents=True, exist_ok=True)
+    (linked / 'libShengUfs.a').write_bytes(archive.read_bytes())
+if component == 'NativeRamBlock':
+    # The link check hashes RamBlock.o next to libRamBlock.a. The compiled file is NativeRamBlock.o.
+    destination.with_name('RamBlock.o').write_bytes(destination.read_bytes())
+if component == 'NativeVirtioBlock':
+    # The link check hashes VirtioMmioBlock.o next to libVirtioMmioBlock.a. The compiled file is NativeVirtioBlock.o.
+    destination.with_name('VirtioMmioBlock.o').write_bytes(destination.read_bytes())
 print(f'{component}: -Werror build and actual ARM64/iOS 17 object audit passed')

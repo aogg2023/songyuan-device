@@ -38,9 +38,10 @@ CONFIG_XNU_OWNER_CACHE_STARTUP=y
 CONFIG_XNU_OWNER_BOOT_MANIFEST=y
 CONFIG_XNU_OWNER_DATA_MOUNT=y
 CONFIG_XNU_OWNER_UNION_SYSTEMOS=y
-CONFIG_XNU_NATIVE_VIRTIO_BLOCK_ARCHIVE="{tree}/build/native-virtio-block-verified-bundle/libNativeVirtioBlock.a"
+CONFIG_XNU_NATIVE_VIRTIO_BLOCK_ARCHIVE="{tree}/build/native-virtio-block-verified-bundle/libVirtioMmioBlock.a"
 CONFIG_XNU_VERIFIED_ROOT_ARCHIVE="{tree}/build/verified-root-os-xnu-bundle/libVerifiedRootProbe.a"
-CONFIG_XNU_EXTRA_LD_ARCHIVES=""
+# libSongyuanWifi.a from scripts/build-songyuan-wifi.py. The baseline script appends this on the real link.
+CONFIG_XNU_EXTRA_LD_ARCHIVES="-Wl,-force_load,{tree}/build/songyuan-wifi/libSongyuanWifi.a"
 # Volume UUID of this board's Data seed (scripts/prepare-owner-data-fixture.py, build/owner-data-fixture/seed.json).
 CONFIG_XNU_OWNER_DATA_VOLUME_UUID="DA0A68B3-8950-4E0C-9527-8AC5C426F5A9"
 

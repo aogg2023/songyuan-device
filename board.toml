@@ -51,12 +51,12 @@ archives = [
   "build-arm-driver.py ArmCpu",
   "audit-storage-interface-static.py",
   "build-arm-driver.py NativeAES",
-  "build-native-aes-bindings.py",
+  "build-native-aes-bindings.py --objects-dir build/software-aes",
   "build-arm-driver.py NativeUfs",
   "build-arm-driver.py NativeVirtioBlock --verified-root --verified-root-bundle",
   "build-native-virtio-bindings.py --component NativeVirtioBlock --directory build/native-virtio-block-verified-bundle",
   "build-arm-driver.py NativeRamBlock",
-  "build-native-virtio-bindings.py --component NativeRamBlock --directory build/native-ram-block",
+  "build-native-virtio-bindings.py --component NativeRamBlock --directory build/ram-block",
   "build-verified-root-probe.py --component os --include-systemos",
   "build-boot-progress.py",               # the diagnostic page (CONFIG_XNU_BOOT_PROGRESS), kits/myron
   # The original AMFI panics "No PMGR?" without an ApplePMGR nub: the guarded original-PMGR integration of sheng
@@ -69,6 +69,9 @@ archives = [
   # The CPU-copied GOP display (CONFIG_XNU_NATIVE_LEGACY_DISPLAY); its ABI audit reads the reference kernel above. The archive
   # also carries touch (kits/myron MyronTouch.cpp) and the Adreno 840 bring-up (MyronGpuPower.cpp with NativeAdreno's objects).
   "build-native-legacy-display.py",
+  # Wi-Fi probe plus Ath12kWifi (drivers/SongyuanWifi, drivers/Ath12kWifi). Own archive,
+  # linked by CONFIG_XNU_EXTRA_LD_ARCHIVES. Not a member of the display archive.
+  "build-songyuan-wifi.py",
   "build-libpthread-kernel.py",
 ]
 
