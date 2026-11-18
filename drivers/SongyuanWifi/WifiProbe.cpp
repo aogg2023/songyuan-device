@@ -765,20 +765,22 @@ void linkRecover() {
 }
 
 // The chip's own power-up recipe (ath12k_pci_power_up): the boot loader is only started on a chip whose power control, interrupts and warm-boot marker were
-// put in order first. Chip registers above 0x80000 are seen through a window: the window register at BAR + 0x310c takes 0x40000000 | (offset & GENMASK(24, 19)),
-// (the field value, offset bits 24 to 19 shifted down), the register is then at BAR + 0x80000 + (offset & 0x7ffff); the MHI block (0x1e0e100 and up) is at the start of the BAR.
+// put in order first. Chip registers above 0x80000 are seen through a window: this phone is 17cb:110e, and its cnss2
+// (reg.h line 11, PEACH_PCIE_REMAP_BAR_CTRL_OFFSET) writes the window at BAR + 0x3278. The value is 0x40000000 | (offset bits 24:19).
+// The register is then at BAR + 0x80000 + (offset & 0x7ffff); the MHI block (0x1e0e100 and up) is at the start of the BAR.
+constexpr uint32_t kRemapBar = 0x3278;
 uint32_t gWindow = 0xffffffffu;
 uint32_t chipRead(volatile uint32_t *m, uint32_t off) {
     if (off < 0x80000) return m[off / 4];
     const uint32_t window = (off >> 19) & 0x3fu;
-    if (window != gWindow) {m[0x310c / 4] = 0x40000000u | window; (void)m[0x310c / 4]; gWindow = window;}
+    if (window != gWindow) {m[kRemapBar / 4] = 0x40000000u | window; (void)m[kRemapBar / 4]; gWindow = window;}
     if (off >= 0x1e0e100u && off <= 0x1e0effcu) return m[((off - 0x1e0e100u) & 0x7ffffu) / 4];
     return m[(0x80000u + (off & 0x7ffffu)) / 4];
 }
 void chipWrite(volatile uint32_t *m, uint32_t off, uint32_t value) {
     if (off < 0x80000) {m[off / 4] = value; __asm__ volatile("dsb sy" ::: "memory"); return;}
     const uint32_t window = (off >> 19) & 0x3fu;
-    if (window != gWindow) {m[0x310c / 4] = 0x40000000u | window; (void)m[0x310c / 4]; gWindow = window;}
+    if (window != gWindow) {m[kRemapBar / 4] = 0x40000000u | window; (void)m[kRemapBar / 4]; gWindow = window;}
     if (off >= 0x1e0e100u && off <= 0x1e0effcu) m[((off - 0x1e0e100u) & 0x7ffffu) / 4] = value;
     else m[(0x80000u + (off & 0x7ffffu)) / 4] = value;
     __asm__ volatile("dsb sy" ::: "memory");
@@ -813,8 +815,8 @@ void chipPowerUp(volatile uint32_t *m) {
     chipWrite(m, 0x3008u, v & ~1u); (void)chipRead(m, 0x3008u);
     IOSleep(10);
     c[7] = chipRead(m, 0x3008u);
-    m[0x310c / 4] = 0x40000000u | (gWindow == 0xffffffffu ? 0u : gWindow);   // the window register is cleared by the reset; put the cached window back
-    (void)m[0x310c / 4];
+    m[kRemapBar / 4] = 0x40000000u | (gWindow == 0xffffffffu ? 0u : gWindow);   // the window register is cleared by the reset; put the cached window back
+    (void)m[kRemapBar / 4];
     c[8] = m[0x48 / 4];
     m[0x38 / 4] = 2;                         // MHICTRL reset: clears a SYSERR left by the global reset
     __asm__ volatile("dsb sy" ::: "memory");
