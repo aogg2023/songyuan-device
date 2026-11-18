@@ -44,9 +44,6 @@ CONFIG_XNU_VERIFIED_ROOT_ARCHIVE="{tree}/build/verified-root-os-xnu-bundle/libVe
 CONFIG_XNU_EXTRA_LD_ARCHIVES="-Wl,-force_load,{tree}/build/songyuan-wifi/libSongyuanWifi.a"
 # Volume UUID of this board's Data seed (scripts/prepare-owner-data-fixture.py, build/owner-data-fixture/seed.json).
 CONFIG_XNU_OWNER_DATA_VOLUME_UUID="DA0A68B3-8950-4E0C-9527-8AC5C426F5A9"
-# OS volume of the iPad7,1 17.7.11 image. The owner boot manifest requires it.
-# UniXNU profiles/os/ipados-17.7.11-21H461 [root], same value as board.toml root_match_volume_uuid.
-CONFIG_XNU_OWNER_ROOT_VOLUME_UUID="04769D26-2CA0-4825-B443-E2E5F88300F2"
 
 # The on-screen diagnostic page of sheng (boot-progress=2): kernel console, stages, processes, storage and memory, drawn
 # into the framebuffer; also defines boot_progress_poll for NativeUfs (scripts/build-boot-progress.py, kits/myron).
