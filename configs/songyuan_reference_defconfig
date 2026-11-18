@@ -1,0 +1,13 @@
+# First link of a clean tree. The storage audit and the PMGR reference read
+# out/<board>/kernel/kernel.macho, which only a finished prelink leaves behind.
+# This configuration does not build the archives those steps need, and it does
+# not call their symbols, so the kernel can link and prelink. The real
+# songyuan_defconfig build runs after that file exists.
+CONFIG_XNU_BUILD_ARCHIVES=n
+CONFIG_XNU_NATIVE_ARCH_TIMER=y
+CONFIG_XNU_NATIVE_PAN=y
+CONFIG_XNU_DT_PANIC_REGION=y
+CONFIG_XNU_CRYPTO_BOOTSTRAP="prelinked"
+CONFIG_XNU_NATIVE_MOBILE_DISPLAY=n
+CONFIG_XNU_NATIVE_ADRENO=n
+CONFIG_XNU_ARMVIRT_PLATFORM=n
