@@ -4,7 +4,7 @@
 # not call their symbols, so the kernel can link and prelink. The real
 # songyuan_defconfig build runs after that file exists.
 CONFIG_XNU_BUILD_ARCHIVES=n
-CONFIG_XNU_NATIVE_ARCH_TIMER=y
+# The architectural timer requires ArmCpu, and ArmCpu is an archive this pass does not build.
 CONFIG_XNU_NATIVE_PAN=y
 CONFIG_XNU_DT_PANIC_REGION=y
 CONFIG_XNU_CRYPTO_BOOTSTRAP="prelinked"
